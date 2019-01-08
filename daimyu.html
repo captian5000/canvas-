@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Martrix</title>
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- canvas是h5里的标签：表示定义图形。 -->
+    <canvas id="canvas" style="background:#000;"></canvas>
+    <script>
+        window.onload = function () {
+            var canvas = document.querySelector('canvas'),
+                //给页面设置成2d页面
+                context = canvas.getContext('2d'),
+                w, h;
+
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+
+            //初始化
+            var clearColor = 'rgba(0, 0, 0, .1)', //用于绘制渐变阴影
+                wordColor = "#33ff33", //文字颜色
+                words = "0123456789qwertyuiopasdfghjklzxcvbnm,./;'\[]QWERTYUIOP{}ASDFGHJHJKL:ZXCVBBNM<>?",
+                wordsArr = words.split(''), //将文字拆分进一个数组
+                font_size = 16,  //字体大小
+                clumns = w / font_size, //文字降落的列数
+                drops = [];
+                // 设置初始的位置
+            for (var i = 0; i < clumns; i++) {
+                drops[i] = 1;
+            }
+
+            function draw() {
+                context.save();//save：把当前状态的一份拷贝压入到一个保存图像状态的栈中。这就允许您临时地改变图像状态，然后，通过调用 restore() 来恢复以前的值。
+                context.fillStyle = wordColor;//fillStyle：填充上色
+                //设置字体
+                context.font = font_size + "px arial";
+
+                //核心
+                for (var i = 0; i < drops.length; i++) {
+                    // 循环数组中返回小于或等于他随机生成的字符
+                    var text = wordsArr[Math.floor(Math.random() * wordsArr.length)];
+                    // filltext 在画布上绘制“被填充的”文本  
+                    // 使用方法context.fillText(text,x,y,maxWidth);
+                    context.fillText(text, i * font_size, drops[i] * font_size);
+                    // 判断当字体显示位置大于y（最大为1）值时  将其的位置设置为0
+                    if (drops[i] * font_size > h && Math.random() > 0.98) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+                context.restore();//恢复以前的值。
+
+            }
+
+            (function drawFrame() {
+                // requestAnimationFrame用来告诉浏览器你希望执行一个动画，并在下一次浏览器重绘之前，调用指定的函数来更新动画。该方法接受一个回调，并在下一次浏览器重绘之前调用该动画
+                // 并且会返回一个非零值，这个值用来在cancelAnimationFrame()中取消执行动画
+                window.requestAnimationFrame(drawFrame, canvas);
+                context.fillStyle = clearColor;
+                // 语法context.strokeRect(x,y,width,height);
+                // 绘制 宽w高h 像素的矩形：x:	矩形左上角的 x 坐标  y:	矩形左上角的 y 坐标 
+                context.fillRect(0, 0, w, h);
+
+                draw();
+
+            }())
+
+            //resize
+            function resize() {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+
+            }
+            // addEventListener() 方法用于向指定元素添加事件.
+            canvas.addEventListener("resize", resize);
+        }
+
+    </script>
+
+</body>
+
+</html>
